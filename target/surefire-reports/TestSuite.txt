@@ -1,0 +1,12 @@
+-------------------------------------------------------------------------------
+Test set: TestSuite
+-------------------------------------------------------------------------------
+Tests run: 1, Failures: 1, Errors: 0, Skipped: 0, Time elapsed: 140.9 s <<< FAILURE! -- in TestSuite
+org.example.forcegetregister.runners.TestRunner.runScenario["Register with Fixed Values and Login", "Forceget User Registration and Login"](1) -- Time elapsed: 139.6 s <<< FAILURE!
+java.lang.AssertionError: Login was not successful - Welcome message not found! expected [true] but found [false]
+	at org.testng.Assert.fail(Assert.java:111)
+	at org.testng.Assert.failNotEquals(Assert.java:1578)
+	at org.testng.Assert.assertTrue(Assert.java:57)
+	at org.example.forcegetregister.steps.RegisterSteps.loginShouldBeSuccessful(RegisterSteps.java:148)
+	at ✽.login should be successful(file:///C:/Users/devop/OneDrive/Masaüstü/ForgeceRegister/src/test/resources/features/register.feature:14)
+
