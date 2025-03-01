@@ -12,8 +12,3 @@ Feature: Forceget User Registration and Login
     When user navigates to login page
     And user logs in with registered credentials
     Then login should be successful
-
-    # Giriş İşlemi
-    When kullanıcı giriş sayfasına yönlendirilir
-    And kayıtlı bilgilerle giriş yapar
-    Then giriş işlemi başarılı olur 

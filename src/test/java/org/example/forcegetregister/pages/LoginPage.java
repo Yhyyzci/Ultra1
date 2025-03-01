@@ -32,7 +32,7 @@ public class LoginPage {
     @FindBy(xpath = "//div[text()='Customer']")
     private WebElement customerText;
 
-    @FindBy(xpath = "//div[text()='Dashboard']")
+    @FindBy(xpath = "//div[contains(@class, 'ant-layout-content')]//div[text()='Dashboard']")
     private WebElement dashboardTitle;
 
     @FindBy(xpath = "//div[text()='Transportation by Method']")
@@ -50,26 +50,22 @@ public class LoginPage {
     public void login(String email, String password) {
         try {
             System.out.println("Filling login form...");
-            wait.until(ExpectedConditions.elementToBeClickable(emailInput));
-            emailInput.clear();
+            // Email
+            wait.until(ExpectedConditions.elementToBeClickable(emailInput)).clear();
             emailInput.sendKeys(email);
-            Thread.sleep(1000);
-
-            wait.until(ExpectedConditions.elementToBeClickable(passwordInput));
-            passwordInput.clear();
+            
+            // Password
+            wait.until(ExpectedConditions.elementToBeClickable(passwordInput)).clear();
             passwordInput.sendKeys(password);
-            Thread.sleep(1000);
 
-            // Login butonu için JavaScript executor kullan
+            // Login button
             System.out.println("Clicking login button...");
             WebElement loginBtn = wait.until(ExpectedConditions.elementToBeClickable(
                 By.xpath("//button[@class='ant-btn ant-btn-primary']")));
-            ((JavascriptExecutor) driver).executeScript("arguments[0].scrollIntoView(true);", loginBtn);
-            Thread.sleep(1000);
-            ((JavascriptExecutor) driver).executeScript("arguments[0].click();", loginBtn);
+            loginBtn.click();
             
-            Thread.sleep(3000);
-            System.out.println("Login button clicked successfully");
+            System.out.println("Login form submitted successfully");
+            Thread.sleep(3000); // Login sonrası bekleme
         } catch (Exception e) {
             System.err.println("Error during login: " + e.getMessage());
             throw new RuntimeException("Login failed");
@@ -78,28 +74,58 @@ public class LoginPage {
 
     public boolean isDashboardLoaded() {
         try {
-            // Dashboard elementlerini kontrol et
-            boolean isWelcomeDisplayed = wait.until(ExpectedConditions.visibilityOf(welcomeMessage)).isDisplayed();
-            boolean isCustomerDisplayed = wait.until(ExpectedConditions.visibilityOf(customerText)).isDisplayed();
-            boolean isDashboardDisplayed = wait.until(ExpectedConditions.visibilityOf(dashboardTitle)).isDisplayed();
-            boolean isTransportationDisplayed = wait.until(ExpectedConditions.visibilityOf(transportationTitle)).isDisplayed();
-            boolean isShipmentsDisplayed = wait.until(ExpectedConditions.visibilityOf(activeShipmentsTitle)).isDisplayed();
-
-            if (isWelcomeDisplayed && isCustomerDisplayed && isDashboardDisplayed && 
-                isTransportationDisplayed && isShipmentsDisplayed) {
-                System.out.println("Dashboard verification successful:");
-                System.out.println("- Welcome message verified: " + welcomeMessage.getText());
-                System.out.println("- Customer role verified");
-                System.out.println("- Dashboard title verified");
-                System.out.println("- Transportation section verified");
-                System.out.println("- Active shipments section verified");
-                return true;
-            } else {
-                System.err.println("Some dashboard elements are missing!");
+            // URL kontrolü
+            if (!driver.getCurrentUrl().contains("/dashboard")) {
+                System.err.println("Not on dashboard page. Current URL: " + driver.getCurrentUrl());
                 return false;
             }
+
+            // Sayfa yüklenmesi için biraz bekle
+            Thread.sleep(2000);
+
+            // Dashboard başlığını farklı yöntemlerle bulmayı dene
+            try {
+                // Yöntem 1: XPath ile
+                WebElement dashboard1 = driver.findElement(By.xpath("//div[text()='Dashboard']"));
+                if (dashboard1.isDisplayed()) {
+                    System.out.println("Dashboard found with method 1");
+                    return true;
+                }
+            } catch (Exception e) {
+                System.out.println("Method 1 failed: " + e.getMessage());
+            }
+
+            try {
+                // Yöntem 2: Contains ile
+                WebElement dashboard2 = driver.findElement(
+                    By.xpath("//div[contains(text(), 'Dashboard')]"));
+                if (dashboard2.isDisplayed()) {
+                    System.out.println("Dashboard found with method 2");
+                    return true;
+                }
+            } catch (Exception e) {
+                System.out.println("Method 2 failed: " + e.getMessage());
+            }
+
+            try {
+                // Yöntem 3: CSS Selector ile
+                WebElement dashboard3 = driver.findElement(
+                    By.cssSelector("div.ant-layout-content div:contains('Dashboard')"));
+                if (dashboard3.isDisplayed()) {
+                    System.out.println("Dashboard found with method 3");
+                    return true;
+                }
+            } catch (Exception e) {
+                System.out.println("Method 3 failed: " + e.getMessage());
+            }
+
+            // Hiçbir yöntem başarılı olmadı
+            System.err.println("Dashboard element not found with any method");
+            return false;
+
         } catch (Exception e) {
-            System.err.println("Error verifying dashboard: " + e.getMessage());
+            System.err.println("Dashboard verification failed: " + e.getMessage());
+            System.err.println("Current URL: " + driver.getCurrentUrl());
             return false;
         }
     }

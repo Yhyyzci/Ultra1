@@ -1,4 +1,0 @@
-org\example\forcegetregister\pages\RegisterPage.class
-org\example\forcegetregister\pages\LoginPage.class
-org\example\forcegetregister\steps\RegisterSteps.class
-org\example\forcegetregister\runners\TestRunner.class
